@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ho una domanda per te...</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #ffe4e1;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        h1 { color: #d00000; }
+        .buttons { margin-top: 50px; position: relative; width: 300px; height: 100px; }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            border: none;
+        }
+        #btnSi { background-color: #4CAF50; color: white; }
+        #btnNo {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+            transition: 0.1s;
+        }
+        #risultato { display: none; text-align: center; }
+        #risultato img { width: 300px; border-radius: 20px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="contenuto">
+        <h1>Vuoi uscire con me? ❤️</h1>
+        <div class="buttons">
+            <button id="btnSi">SÌ</button>
+            <button id="btnNo">NO</button>
+        </div>
+    </div>
+
+    <div id="risultato">
+        <h1>Sapevo che avresti detto di sì! 😍</h1>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2IzeG54amY0Znd4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KztT2c4u8mYYUiCiEE/giphy.gif" alt="Happy Cat">
+    </div>
+
+    <script>
+        const btnNo = document.getElementById('btnNo');
+        const btnSi = document.getElementById('btnSi');
+        const contenuto = document.getElementById('contenuto');
+        const risultato = document.getElementById('risultato');
+
+        // Funzione per muovere il tasto NO
+        btnNo.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
+            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
+            btnNo.style.left = `${x}px`;
+            btnNo.style.top = `${y}px`;
+        });
+
+        // Funzione per il tasto SÌ
+        btnSi.addEventListener('click', () => {
+            contenuto.style.display = 'none';
+            risultato.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
