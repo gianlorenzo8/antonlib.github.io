@@ -36,30 +36,10 @@
 </head>
 <body>
     <h1>Welcome to the Interactive Page!</h1>
-    <button class="button animated" onclick="sendWebhook()">Click Me</button>
+    <button class="button animated" onclick="handleClick()">Click Me</button>
     <script>
-        function sendWebhook() {
-            const url = 'https://example.com/webhook'; // Replace with your webhook URL
-            const params = {
-                username: 'gianlorenzo8',
-                action: 'button_click',
-                timestamp: new Date().toISOString()
-            };
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(params)
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Webhook sent!');
-                } else {
-                    alert('Failed to send webhook.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        function handleClick() {
+            alert('Hello! You clicked the button!');
         }
     </script>
 </body>
