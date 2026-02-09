@@ -3,35 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Dating Game</title>
+    <title>Colorful Interactive Dating Game</title>
     <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; font-family: Arial, sans-serif; }
-        #game { text-align: center; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-        .no-button:hover { position: relative; animation: runAway 0.5s; }
-        @keyframes runAway {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(50px, -10px); }
-            50% { transform: translate(10px, 50px); }
-            75% { transform: translate(-10px, -50px); }
-            100% { transform: translate(-50px, 10px); }
+        body {
+            background: linear-gradient(to right, #ffcccc, #ffcce6, #ccffcc, #cce6ff, #e6ccff);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            padding: 20px;
+            font-size: 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .yes-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .no-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0;
+            opacity: 0.7;
+            border-radius: 50%;
+            animation: fall 3s infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(600px); }
         }
     </style>
 </head>
 <body>
-    <div id="game">
-        <h1>Vuoi uscire con me?</h1>
-        <button onclick="answer('si')">Si</button>
-        <button class="no-button" onclick="answer('no')">No</button>
-    </div>
+    <h1>Welcome to the Dating Game!</h1>
+    <p id="question">Question goes here...</p>
+    <button class="yes-button">Yes</button>
+    <button class="no-button" id="no-button">No</button>
+
     <script>
-        function answer(response) {
-            if (response === 'si') {
-                alert('Yay! adesso mi sposi anche');
+        const questions = [
+            "Do you like romantic movies?",
+            "Is travel important to you?",
+            "Do you enjoy cooking?",
+            "Would you consider a long-distance relationship?"
+        ];
+        let currentQuestion = 0;
+        const questionElement = document.getElementById('question');
+        const yesButton = document.querySelector('.yes-button');
+        const noButton = document.getElementById('no-button');
+
+        yesButton.addEventListener('click', () => {
+            alert('Great choice!')
+            loadNextQuestion();
+        });
+
+        noButton.addEventListener('mouseover', () => {
+            noButton.style.position = 'absolute';
+            noButton.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+            noButton.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+        });
+
+        function loadNextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                questionElement.textContent = questions[currentQuestion];
             } else {
-                alert('Oh no!');
+                questionElement.textContent = 'Thank you for playing!';
+                yesButton.style.display = 'none';
+                noButton.style.display = 'none';
+                throwConfetti();
             }
         }
+
+        function throwConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                document.body.appendChild(confetti);
+            }
+        }
+
+        questionElement.textContent = questions[currentQuestion];
     </script>
 </body>
 </html>
