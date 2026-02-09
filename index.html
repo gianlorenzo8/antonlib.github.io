@@ -3,101 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colorful Interactive Dating Game</title>
+    <title>Interactive Dating Game</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(to right, #ffcccc, #ffcce6, #ccffcc, #cce6ff, #e6ccff);
-            font-family: Arial, sans-serif;
-            text-align: center;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
         }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #game {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.6s ease-out;
+            max-width: 600px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         h1 {
             color: #333;
+            font-size: 42px;
+            margin-bottom: 50px;
+            animation: pulse 2s ease-in-out infinite;
         }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
         button {
-            padding: 20px;
-            font-size: 20px;
-            margin: 10px;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transform: scale(1);
         }
-        .yes-button {
-            background-color: #4CAF50;
+
+        #yesBtn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
+            min-width: 150px;
         }
-        .no-button {
-            background-color: #f44336;
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        #yesBtn:active {
+            transform: scale(0.95);
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #f44336, #da190b);
             color: white;
+            min-width: 150px;
+            position: fixed;
         }
+
+        #noBtn:hover {
+            box-shadow: 0 12px 30px rgba(244, 67, 54, 0.4);
+        }
+
+        .success-message {
+            display: none;
+            font-size: 36px;
+            color: #4CAF50;
+            margin-top: 40px;
+            animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes successPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-10deg);
+            }
+            50% {
+                transform: scale(1.15);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
         .confetti {
-            position: absolute;
+            position: fixed;
             width: 10px;
             height: 10px;
-            background-color: #ff0;
-            opacity: 0.7;
-            border-radius: 50%;
-            animation: fall 3s infinite;
+            background: #ffd700;
+            pointer-events: none;
+            animation: confettiFall 3s ease-out forwards;
         }
-        @keyframes fall {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(600px); }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(100px) rotate(720deg);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the Dating Game!</h1>
-    <p id="question">Question goes here...</p>
-    <button class="yes-button">Yes</button>
-    <button class="no-button" id="no-button">No</button>
+    <div id="game">
+        <h1 id="question">Vuoi uscire con me?</h1>
+        <div class="button-container">
+            <button id="yesBtn" onclick="answer('si')">Si</button>
+            <button id="noBtn" onclick="answer('no')">No</button>
+        </div>
+        <div class="success-message" id="successMsg"></div>
+    </div>
 
     <script>
         const questions = [
-            "Do you like romantic movies?",
-            "Is travel important to you?",
-            "Do you enjoy cooking?",
-            "Would you consider a long-distance relationship?"
+            "Ti piace dormire con me?",
+            "Sono un bravo cuoco?",
+            "Consiglieresti agli amici un antonio tascabile?",
+            "Vuoi uscire con me?"
         ];
+
+        const responses = [
+            "Anche a me",
+            "Lo so",
+            "È normale",
+            "Allora mi devi sposare"
+        ];
+
         let currentQuestion = 0;
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
         const questionElement = document.getElementById('question');
-        const yesButton = document.querySelector('.yes-button');
-        const noButton = document.getElementById('no-button');
+        const successMsg = document.getElementById('successMsg');
 
-        yesButton.addEventListener('click', () => {
-            alert('Great choice!')
-            loadNextQuestion();
-        });
+        // Posiziona il bottone No inizialmente
+        noBtn.style.left = Math.random() * (window.innerWidth - noBtn.clientWidth) + 'px';
+        noBtn.style.top = Math.random() * (window.innerHeight - noBtn.clientHeight) + 'px';
 
-        noButton.addEventListener('mouseover', () => {
-            noButton.style.position = 'absolute';
-            noButton.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-            noButton.style.top = Math.random() * (window.innerHeight - 200) + 'px';
-        });
-
-        function loadNextQuestion() {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
-                questionElement.textContent = questions[currentQuestion];
-            } else {
-                questionElement.textContent = 'Thank you for playing!';
-                yesButton.style.display = 'none';
-                noButton.style.display = 'none';
-                throwConfetti();
-            }
+        // Funzione per generare movimento imprevedibile
+        function moveNoButton() {
+            const randomX = Math.random() * (window.innerWidth - noBtn.clientWidth - 100) + 50;
+            const randomY = Math.random() * (window.innerHeight - noBtn.clientHeight - 100) + 50;
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
         }
 
-        function throwConfetti() {
-            for (let i = 0; i < 100; i++) {
+        // Muove il bottone quando il mouse si avvicina
+        noBtn.addEventListener('mouseover', moveNoButton);
+
+        // Muove il bottone su touch per mobile
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        function createConfetti() {
+            for (let i = 0; i < 30; i++) {
                 const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
+                confetti.className = 'confetti';
                 confetti.style.left = Math.random() * window.innerWidth + 'px';
-                confetti.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                confetti.style.top = '-10px';
+                confetti.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4', '#95e1d3', '#ff8c42'][Math.floor(Math.random() * 5)];
+                confetti.style.animation = `confettiFall ${2 + Math.random() * 1}s ease-out forwards`;
                 document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
             }
         }
 
-        questionElement.textContent = questions[currentQuestion];
+        function answer(response) {
+            if (response === 'si') {
+                successMsg.textContent = responses[currentQuestion];
+                successMsg.style.display = 'block';
+                createConfetti();
+
+                currentQuestion++;
+
+                if (currentQuestion < questions.length) {
+                    setTimeout(() => {
+                        questionElement.textContent = questions[currentQuestion];
+                        successMsg.style.display = 'none';
+                        successMsg.textContent = '';
+                    }, 2000);
+                } else {
+                    yesBtn.style.display = 'none';
+                    noBtn.style.display = 'none';
+                }
+            }
+        }
     </script>
 </body>
 </html>
