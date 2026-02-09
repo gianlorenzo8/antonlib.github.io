@@ -1,75 +1,66 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ho una domanda per te...</title>
+    <title>Interactive Page</title>
     <style>
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #ffe4e1;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
         }
-        h1 { color: #d00000; }
-        .buttons { margin-top: 50px; position: relative; width: 300px; height: 100px; }
-        button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-radius: 10px;
-            border: none;
-        }
-        #btnSi { background-color: #4CAF50; color: white; }
-        #btnNo {
-            background-color: #f44336;
+        .button {
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
-            position: absolute;
-            transition: 0.1s;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #risultato { display: none; text-align: center; }
-        #risultato img { width: 300px; border-radius: 20px; margin-top: 20px; }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .animated {
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body>
-
-    <div id="contenuto">
-        <h1>Vuoi uscire con me? ❤️</h1>
-        <div class="buttons">
-            <button id="btnSi">SÌ</button>
-            <button id="btnNo">NO</button>
-        </div>
-    </div>
-
-    <div id="risultato">
-        <h1>Sapevo che avresti detto di sì! 😍</h1>
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2IzeG54amY0Znd4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4ZzJ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KztT2c4u8mYYUiCiEE/giphy.gif" alt="Happy Cat">
-    </div>
-
+    <h1>Welcome to the Interactive Page!</h1>
+    <button class="button animated" onclick="sendWebhook()">Click Me</button>
     <script>
-        const btnNo = document.getElementById('btnNo');
-        const btnSi = document.getElementById('btnSi');
-        const contenuto = document.getElementById('contenuto');
-        const risultato = document.getElementById('risultato');
-
-        // Funzione per muovere il tasto NO
-        btnNo.addEventListener('mouseover', () => {
-            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
-            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
-            btnNo.style.left = `${x}px`;
-            btnNo.style.top = `${y}px`;
-        });
-
-        // Funzione per il tasto SÌ
-        btnSi.addEventListener('click', () => {
-            contenuto.style.display = 'none';
-            risultato.style.display = 'block';
-        });
+        function sendWebhook() {
+            const url = 'https://example.com/webhook'; // Replace with your webhook URL
+            const params = {
+                username: 'gianlorenzo8',
+                action: 'button_click',
+                timestamp: new Date().toISOString()
+            };
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Webhook sent!');
+                } else {
+                    alert('Failed to send webhook.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 </body>
-
 </html>
