@@ -3,43 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Page</title>
+    <title>Interactive Dating Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        .animated {
-            animation: pulse 1s infinite;
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; font-family: Arial, sans-serif; }
+        #game { text-align: center; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        .no-button:hover { position: relative; animation: runAway 0.5s; }
+        @keyframes runAway {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(50px, -10px); }
+            50% { transform: translate(10px, 50px); }
+            75% { transform: translate(-10px, -50px); }
+            100% { transform: translate(-50px, 10px); }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the Interactive Page!</h1>
-    <button class="button animated" onclick="handleClick()">Click Me</button>
+    <div id="game">
+        <h1>Vuoi uscire con me?</h1>
+        <button onclick="answer('si')">Si</button>
+        <button class="no-button" onclick="answer('no')">No</button>
+    </div>
     <script>
-        function handleClick() {
-            alert('Hello! You clicked the button!');
+        function answer(response) {
+            if (response === 'si') {
+                alert('Yay! Let\'s go out!');
+            } else {
+                alert('Oh no!');
+            }
         }
     </script>
 </body>
