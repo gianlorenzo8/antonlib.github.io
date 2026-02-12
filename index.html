@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Antonio's Dating Game</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Arial', sans-serif;
@@ -21,7 +17,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            position: relative;
         }
 
         @keyframes gradient {
@@ -36,74 +31,154 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            max-width: 600px;
+            max-width: 500px;
             width: 90%;
-            z-index: 1;
+            position: relative;
+            z-index: 10;
         }
 
-        h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 40px;
-            min-height: 60px;
-        }
+        h1 { color: #333; font-size: 24px; margin-bottom: 30px; }
 
         .button-container {
             display: flex;
             gap: 20px;
             justify-content: center;
             align-items: center;
-            min-height: 100px;
+            min-height: 80px;
         }
 
         button {
-            padding: 15px 35px;
-            font-size: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
             font-weight: bold;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        #yesBtn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            z-index: 2;
-        }
+        #yesBtn { background: #4CAF50; color: white; }
 
         #noBtn {
-            background: linear-gradient(135deg, #f44336, #da190b);
+            background: #f44336;
             color: white;
-            position: fixed;
+            position: fixed; /* Mantenuto per farlo scappare ovunque */
+            top: 55%; /* Posizione iniziale sicura */
+            left: 55%;
             z-index: 1000;
-            /* Movimento fluido ma veloce */
-            transition: left 0.2s ease-out, top 0.2s ease-out;
+            transition: all 0.2s ease;
         }
 
         .success-message {
             display: none;
-            font-size: 24px;
+            font-size: 20px;
             color: #e73c7e;
             margin-top: 20px;
             font-weight: bold;
-            animation: successPop 0.4s ease-out;
-        }
-
-        @keyframes successPop {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
         .confetti {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            z-index: 999;
+            position: fixed; width: 8px; height: 8px; z-index: 999;
             animation: confettiFall 3s ease-out forwards;
         }
 
         @keyframes confettiFall {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity:
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game">
+        <h1 id="question">Benvenuta al dating Game di Antonio! Pronto a giocare?</h1>
+        <div class="button-container">
+            <button id="yesBtn" onclick="handleYes()">Sì</button>
+            <button id="noBtn">No</button>
+        </div>
+        <div class="success-message" id="successMsg"></div>
+    </div>
+
+    <script>
+        const questions = [
+            "Ti piace dormire con me?",
+            "Sono un bravo cuoco?",
+            "Consiglieresti agli amici un Antonio tascabile?",
+            "Vuoi uscire con me?"
+        ];
+
+        const responses = [
+            "Perfetto! ❤️",
+            "Sapevo fossi un'intenditrice! 👨‍🍳",
+            "Ottima recensione a 5 stelle! ⭐",
+            "Allora mi devi sposare! 💍"
+        ];
+
+        let gameStarted = false;
+        let currentQuestion = 0;
+        
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const questionElement = document.getElementById('question');
+        const successMsg = document.getElementById('successMsg');
+
+        // Funzione per muovere il tasto NO
+        function moveNoButton() {
+            const padding = 50;
+            // Calcolo basato sulla finestra visibile
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        function handleYes() {
+            if (!gameStarted) {
+                gameStarted = true;
+                questionElement.textContent = questions[currentQuestion];
+                return;
+            }
+
+            successMsg.textContent = responses[currentQuestion];
+            successMsg.style.display = 'block';
+            
+            // Confetti
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = ['#ffd700','#ff6b6b','#4ecdc4'][Math.floor(Math.random()*3)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+
+            yesBtn.disabled = true;
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    questionElement.textContent = questions[currentQuestion];
+                    successMsg.style.display = 'none';
+                    yesBtn.disabled = false;
+                } else {
+                    questionElement.textContent = "Hai vinto! ❤️";
+                    yesBtn.style.display = 'none';
+                    noBtn.style.display = 'none';
+                    successMsg.textContent = "Contatta Antonio per il premio!";
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
