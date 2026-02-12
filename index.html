@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +21,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            position: relative; /* Necessario per i bottoni fixed */
         }
 
         @keyframes gradient {
@@ -38,117 +39,81 @@
             backdrop-filter: blur(10px);
             animation: slideIn 0.6s ease-out;
             max-width: 600px;
+            width: 90%;
+            z-index: 1;
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
             color: #333;
-            font-size: 42px;
+            font-size: 32px;
             margin-bottom: 50px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            min-height: 80px; /* Previene salti di layout */
         }
 
         .button-container {
             display: flex;
             gap: 30px;
             justify-content: center;
-            flex-wrap: wrap;
-            position: relative;
+            align-items: center;
+            min-height: 100px;
         }
 
         button {
-            padding: 20px 40px;
-            font-size: 24px;
+            padding: 15px 30px;
+            font-size: 20px;
             font-weight: bold;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            transform: scale(1);
         }
 
         #yesBtn {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
-            min-width: 150px;
-        }
-
-        #yesBtn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 30px rgba(76, 175, 80, 0.4);
-        }
-
-        #yesBtn:active {
-            transform: scale(0.95);
+            z-index: 2;
         }
 
         #noBtn {
             background: linear-gradient(135deg, #f44336, #da190b);
             color: white;
-            min-width: 150px;
-            position: fixed;
-        }
-
-        #noBtn:hover {
-            box-shadow: 0 12px 30px rgba(244, 67, 54, 0.4);
+            position: fixed; /* Manteniamo fixed per muoverlo ovunque */
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .success-message {
             display: none;
-            font-size: 36px;
+            font-size: 28px;
             color: #4CAF50;
-            margin-top: 40px;
-            animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin-top: 20px;
+            font-weight: bold;
+            animation: successPop 0.5s ease-out;
         }
 
         @keyframes successPop {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(-10deg);
-            }
-            50% {
-                transform: scale(1.15);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #ffd700;
-            pointer-events: none;
+            z-index: 999;
             animation: confettiFall 3s ease-out forwards;
         }
 
         @keyframes confettiFall {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) translateX(100px) rotate(720deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
@@ -156,8 +121,8 @@
     <div id="game">
         <h1 id="question">Vuoi uscire con me?</h1>
         <div class="button-container">
-            <button id="yesBtn" onclick="answer('si')">Si</button>
-            <button id="noBtn" onclick="answer('no')">No</button>
+            <button id="yesBtn" onclick="answer('si')">Sì</button>
+            <button id="noBtn">No</button>
         </div>
         <div class="success-message" id="successMsg"></div>
     </div>
@@ -166,15 +131,15 @@
         const questions = [
             "Ti piace dormire con me?",
             "Sono un bravo cuoco?",
-            "Consiglieresti agli amici un antonio tascabile?",
+            "Consiglieresti agli amici un Antonio tascabile?",
             "Vuoi uscire con me?"
         ];
 
         const responses = [
-            "Anche a me",
-            "Lo so",
-            "È normale",
-            "Allora mi devi sposare"
+            "Anche a me ❤️",
+            "Lo so! 👨‍🍳",
+            "Ottima scelta! ⭐",
+            "Allora mi devi sposare! 💍"
         ];
 
         let currentQuestion = 0;
@@ -183,25 +148,32 @@
         const questionElement = document.getElementById('question');
         const successMsg = document.getElementById('successMsg');
 
-        // Posiziona il bottone No inizialmente
-        noBtn.style.left = Math.random() * (window.innerWidth - noBtn.clientWidth) + 'px';
-        noBtn.style.top = Math.random() * (window.innerHeight - noBtn.clientHeight) + 'px';
-
-        // Funzione per generare movimento imprevedibile
+        // Funzione per muovere il bottone in modo che resti sempre VISIBILE
         function moveNoButton() {
-            const randomX = Math.random() * (window.innerWidth - noBtn.clientWidth - 100) + 50;
-            const randomY = Math.random() * (window.innerHeight - noBtn.clientHeight - 100) + 50;
-            
-            noBtn.style.position = 'fixed';
+            const padding = 20; // Margine di sicurezza dai bordi
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+
+            // Calcola limiti massimi per non uscire dalla finestra
+            const maxX = window.innerWidth - btnWidth - padding;
+            const maxY = window.innerHeight - btnHeight - padding;
+
+            // Genera coordinate che partano almeno dal padding
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
-        // Muove il bottone quando il mouse si avvicina
-        noBtn.addEventListener('mouseover', moveNoButton);
+        // Inizializza posizione (vicino al centro ma non sopra il Sì)
+        window.onload = () => {
+            noBtn.style.left = (window.innerWidth / 2 + 50) + 'px';
+            noBtn.style.top = (window.innerHeight / 2) + 'px';
+        };
 
-        // Muove il bottone su touch per mobile
-        noBtn.addEventListener('touchstart', function(e) {
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             moveNoButton();
         });
@@ -210,12 +182,11 @@
             for (let i = 0; i < 30; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
-                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.left = Math.random() * 100 + 'vw';
                 confetti.style.top = '-10px';
-                confetti.style.background = ['#ffd700', '#ff6b6b', '#4ecdc4', '#95e1d3', '#ff8c42'][Math.floor(Math.random() * 5)];
-                confetti.style.animation = `confettiFall ${2 + Math.random() * 1}s ease-out forwards`;
+                confetti.style.backgroundColor = ['#ffd700', '#ff6b6b', '#4ecdc4', '#95e1d3', '#ff8c42'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
                 document.body.appendChild(confetti);
-                
                 setTimeout(() => confetti.remove(), 3000);
             }
         }
@@ -229,14 +200,20 @@
                 currentQuestion++;
 
                 if (currentQuestion < questions.length) {
+                    // Disabilita bottoni temporaneamente per far leggere la risposta
+                    yesBtn.disabled = true;
                     setTimeout(() => {
                         questionElement.textContent = questions[currentQuestion];
                         successMsg.style.display = 'none';
-                        successMsg.textContent = '';
+                        yesBtn.disabled = false;
                     }, 2000);
                 } else {
-                    yesBtn.style.display = 'none';
-                    noBtn.style.display = 'none';
+                    // Fine del gioco
+                    setTimeout(() => {
+                        questionElement.textContent = "❤️❤️❤️";
+                        yesBtn.style.display = 'none';
+                        noBtn.style.display = 'none';
+                    }, 2000);
                 }
             }
         }
